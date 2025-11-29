@@ -57,19 +57,14 @@ apt-get install -y build-essential curl
 
 # Check for cargo
 if ! command -v cargo &> /dev/null; then
-    if [ -f "$HOME/.cargo/bin/cargo" ]; then
-        source "$HOME/.cargo/env"
-    elif [ -f "/home/pi/.cargo/env" ]; then
-        # Fallback to pi user's cargo if available and we are running as root
-        # We cannot source the env file because it uses $HOME which is /root when running with sudo
-        export RUSTUP_HOME=/home/pi/.rustup
-        export CARGO_HOME=/home/pi/.cargo
-        export PATH="/home/pi/.cargo/bin:$PATH"
-    else
+    if [ ! -f "$HOME/.cargo/bin/cargo" ]; then
         echo "Rust not found. Installing..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source "$HOME/.cargo/env"
     fi
+	
+	source "$HOME/.cargo/env"
+	export RUSTUP_HOME=$HOME/.rustup
+    export CARGO_HOME=$HOME/.cargo
 fi
 
 echo "Building application..."
