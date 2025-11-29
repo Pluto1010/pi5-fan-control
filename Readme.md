@@ -6,19 +6,55 @@ With Ubuntu on Raspberry Pi 5 there is no service to monitor cpu temperature and
 This is a Rust rewrite of the original Python script, offering better performance and lower resource usage.
 This has been tested on Raspberry Pi 5 Model B.
 
+## Usage
+
+### Status Display (Default)
+Running the binary without arguments displays the current fan status with a colorful, modern output:
+
+```
+$ rpi-fan-control
+
+  🍓 Pi 5 Fan Status
+  ──────────────────────────────────
+
+  🌡️  Temperature:  45.2°C
+
+  😴  Fan Speed:  Off (level 0)
+
+  ⚡  RPM:  0 RPM
+```
+
+### JSON Output
+For scripting or monitoring integration, use the `--json` flag:
+
+```
+$ rpi-fan-control --json
+{"temperature_celsius":45.2,"speed_setting":"off","speed_level":0,"rpm":0}
+```
+
+### Daemon Mode
+Run as a background service that continuously monitors temperature and adjusts fan speed:
+
+```
+$ sudo rpi-fan-control --daemon
+Fan control daemon started
+```
+
+This is the mode used by the systemd service.
+
 ## Fan control parameters
 
-Every two seconds the service checks the cpu temperature, and compares it 
+Every two seconds the daemon checks the cpu temperature, and compares it 
 to a set of constants to determine the fan speed to set. The fan speed is represented by the FanSpeed 
 enum. The values correlate to the table below. 
 
-|Value|Fan Speed Constant | Temp |
-|-----|-------------------|------|
-|  4  | FanSpeed.Full     | >70°C|
-|  3  | FanSpeed.High     | >65°C|
-|  2  | FanSpeed.Medium   | >60°C|
-|  1  | FanSpeed.Low      | >55°C|
-|  0  | FanSpeed.Off      | <55°C|
+|Value|Fan Speed Constant | Temp |Emoji|
+|-----|-------------------|------|-----|
+|  4  | FanSpeed.Full     | ≥70°C| 🚀  |
+|  3  | FanSpeed.High     | ≥65°C| 🌪️  |
+|  2  | FanSpeed.Medium   | ≥60°C| 💨  |
+|  1  | FanSpeed.Low      | ≥55°C| 🌀  |
+|  0  | FanSpeed.Off      | <55°C| 😴  |
 
 ### This is a chart showing a few days of statistics on my pi5. 
 ![fanstats-dark.png](fanstats-dark.png#gh-dark-mode-only)
@@ -31,21 +67,46 @@ enum. The values correlate to the table below.
 
 ## Installation 
 
-### Notes about the setup script.
-The setup script ***must*** be run on the same path as the fan-control script and fan-control.service unit file as that is the path written to the service unit file. If you wish to move these files, simply run setup.sh again. 
-
 Clone this repository: 
 
 ```
 git clone <your-repo-url>
-```
-
-Then cd to pi5-fan-control and run ./setup.sh and follow the prompts. 
-
-
-```
 cd pi5-fan-control
+```
+
+### Quick Setup
+
+Run the setup script to install build dependencies:
+
+```
 sudo ./setup.sh
+```
+
+Then build and install:
+
+```
+make build
+sudo make install
+sudo make install-service
+```
+
+### Start the Service
+
+```
+sudo systemctl enable --now rpi-fan-control
+```
+
+### Check Status
+
+```
+# View service status
+sudo systemctl status rpi-fan-control
+
+# View current fan status (colorful output)
+rpi-fan-control
+
+# View current fan status (JSON)
+rpi-fan-control --json
 ```
 
 # Inspiration and Credit where Due
