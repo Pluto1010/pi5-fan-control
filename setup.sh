@@ -50,9 +50,9 @@ if ! command -v cargo &> /dev/null; then
 fi
 
 echo "Dependencies installed."
-echo "- `make build` to build the fan-control service."
-echo "- `make install` to install the fan-control service." 
-echo "- `make install-service` to install the fan-control service."
-echo "- `fan-control` to get the current fan speed and temperature."
-echo "- `fan-control --help` for usage information."
+echo "- 'make build' to build the fan-control service."
+echo "- 'make install' to install the fan-control service." 
+echo "- 'make install-service' to install the fan-control service."
+echo "- 'fan-control' to get the current fan speed and temperature."
+echo "- 'fan-control --help' for usage information."
 echo "Setup complete."
