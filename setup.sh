@@ -47,6 +47,31 @@ while [[ ${answer} != "yes" ]] ; do
 		no ) exit 0 ;;
 	esac
 done
+
+##
+## Install dependencies and build
+##
+echo "Installing dependencies..."
+apt-get update
+apt-get install -y build-essential curl
+
+# Check for cargo
+if ! command -v cargo &> /dev/null; then
+    if [ -f "$HOME/.cargo/bin/cargo" ]; then
+        source "$HOME/.cargo/env"
+    elif [ -f "/home/pi/.cargo/env" ]; then
+        # Fallback to pi user's cargo if available and we are running as root
+        source "/home/pi/.cargo/env"
+    else
+        echo "Rust not found. Installing..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source "$HOME/.cargo/env"
+    fi
+fi
+
+echo "Building application..."
+make build || abort "Build failed"
+
 ## Ediy service file to reflect script location
 
 
