@@ -18,29 +18,11 @@ if [[  $(id -u) != 0 ]] ; then
 fi
 
 ##
-## Check the two control interface paths we need. If one or both are not present
-## set $ok = "false" so we dont continue. 
-##
-
-if [[ ! -f "/sys/class/thermal/cooling_device0/cur_state" ]] ; then
-	echo "Cannot find fan control interface at /sys/class/thermal/cooling_device0/cur_state" >&2
-	echo "(is the pwm_fan kernel module loaded?)" >&2
-	ok="false"
-fi
-if [[ ! -f "/sys/devices/virtual/thermal/thermal_zone0/temp" ]]; then
-	echo "Cannot find CPU temperature interface at /sys/devices/virtual/thermal/thermal_zone0/temp" >&2
-	ok="false"
-fi
-if [[ "$ok" == "false" ]] ; then
-	abort "Aborting due to previous errors"
-fi
-
-##
 ## Ask to proceed. Accept only yes nor no for an answer
 ## 
 
 while [[ ${answer} != "yes" ]] ; do
-	echo -n "This script will edit, install, enable, and start the service. Proceeed? [yes|no]: "
+	echo -n "This script will install build dependencies. Proceed? [yes|no]: "
 	read -r answer
 	case $answer in
 		yes ) break ;; 
@@ -49,7 +31,7 @@ while [[ ${answer} != "yes" ]] ; do
 done
 
 ##
-## Install dependencies and build
+## Install dependencies
 ##
 echo "Installing dependencies..."
 apt-get update
@@ -67,18 +49,10 @@ if ! command -v cargo &> /dev/null; then
     export CARGO_HOME=$HOME/.cargo
 fi
 
-echo "Building application..."
-make build || abort "Build failed"
-
-## Ediy service file to reflect script location
-
-
-## Copy service file, enable and start service
-echo "Copying, enabling and starting service unit."
-sed  "s@/path/to/script@${dir}@g" <fan-control.service >/etc/systemd/system/fan-control.service || abort "Error editing service unit"
-systemctl daemon-reload  || abort "Error reloading systemd"
-systemctl enable fan-control.service || abort "non-zero return on enble fan-control"
-systemctl start fan-control.service || abort "non-zero return on start fan-control"
-echo "If all is well, you should see a running service in the status below"
-echo ""
-systemctl status fan-control.service
+echo "Dependencies installed."
+echo "- `make build` to build the fan-control service."
+echo "- `make install` to install the fan-control service." 
+echo "- `make install-service` to install the fan-control service."
+echo "- `fan-control` to get the current fan speed and temperature."
+echo "- `fan-control --help` for usage information."
+echo "Setup complete."
