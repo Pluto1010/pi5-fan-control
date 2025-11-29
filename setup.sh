@@ -61,7 +61,10 @@ if ! command -v cargo &> /dev/null; then
         source "$HOME/.cargo/env"
     elif [ -f "/home/pi/.cargo/env" ]; then
         # Fallback to pi user's cargo if available and we are running as root
-        source "/home/pi/.cargo/env"
+        # We cannot source the env file because it uses $HOME which is /root when running with sudo
+        export RUSTUP_HOME=/home/pi/.rustup
+        export CARGO_HOME=/home/pi/.cargo
+        export PATH="/home/pi/.cargo/bin:$PATH"
     else
         echo "Rust not found. Installing..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
