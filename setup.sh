@@ -49,6 +49,7 @@ if ! command -v cargo &> /dev/null; then
     export CARGO_HOME=$HOME/.cargo
 fi
 
+echo
 echo "Dependencies installed."
 echo "- 'make build' to build the fan-control service."
 echo "- 'make install' to install the fan-control service." 
