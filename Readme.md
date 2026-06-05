@@ -19,9 +19,9 @@ $ rpi-fan-control
 
   🌡️  Temperature:  45.2°C
 
-  😴  Fan Speed:  Off (level 0)
+  🌀  Fan Speed:  Low (level 1)
 
-  ⚡  RPM:  0 RPM
+  ⚡  RPM:  1400 RPM
 ```
 
 ### JSON Output
@@ -53,8 +53,8 @@ enum. The values correlate to the table below.
 |  4  | FanSpeed.Full     | ≥70°C| 🚀  |
 |  3  | FanSpeed.High     | ≥65°C| 🌪️  |
 |  2  | FanSpeed.Medium   | ≥60°C| 💨  |
-|  1  | FanSpeed.Low      | ≥55°C| 🌀  |
-|  0  | FanSpeed.Off      | <55°C| 😴  |
+|  1  | FanSpeed.Low      | <60°C (minimum daemon speed)| 🌀  |
+|  0  | FanSpeed.Off      | Not used by daemon | 😴  |
 
 ### This is a chart showing a few days of statistics on my pi5. 
 ![fanstats-dark.png](fanstats-dark.png#gh-dark-mode-only)

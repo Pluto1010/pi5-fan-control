@@ -143,8 +143,6 @@ impl Fan {
             FanSpeed::High
         } else if temp >= 60.0 {
             FanSpeed::Medium
-        } else if temp >= 55.0 {
-            FanSpeed::Low
         } else {
             FanSpeed::Low
         };
