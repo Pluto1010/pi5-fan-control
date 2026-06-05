@@ -83,8 +83,12 @@ impl Fan {
     fn get_speed(&self) -> io::Result<FanSpeed> {
         let mut content = String::new();
         File::open(self.fan_path)?.read_to_string(&mut content)?;
-        let val = content.trim().parse::<u8>().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
-        FanSpeed::from_u8(val).ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Invalid fan speed value"))
+        let val = content
+            .trim()
+            .parse::<u8>()
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        FanSpeed::from_u8(val)
+            .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "Invalid fan speed value"))
     }
 
     fn set_speed(&self, speed: FanSpeed) -> io::Result<()> {
@@ -96,7 +100,10 @@ impl Fan {
     fn get_temp(&self) -> io::Result<f32> {
         let mut content = String::new();
         File::open(self.temp_path)?.read_to_string(&mut content)?;
-        let val = content.trim().parse::<f32>().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        let val = content
+            .trim()
+            .parse::<f32>()
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
         Ok(val / 1000.0)
     }
 
@@ -136,7 +143,7 @@ impl Fan {
 
     fn adjust_for_temp(&self) -> io::Result<()> {
         let temp = self.get_temp()?;
-        
+
         let target_speed = if temp >= 70.0 {
             FanSpeed::Full
         } else if temp >= 65.0 {
@@ -157,7 +164,7 @@ fn check_prerequisites() {
         "/sys/class/thermal/cooling_device0/cur_state",
         "/sys/devices/virtual/thermal/thermal_zone0/temp",
     ];
-    
+
     let mut fail = false;
     for p in &paths {
         if !Path::new(p).exists() {
@@ -165,7 +172,7 @@ fn check_prerequisites() {
             fail = true;
         }
     }
-    
+
     if fail {
         eprintln!("Required control interfaces are not present. Please ensure any required kernel modules are loaded.");
         std::process::exit(-1);
@@ -210,16 +217,22 @@ fn show_status(fan: &Fan, json: bool) {
                 println!("{}", serde_json::to_string(&status).unwrap());
             } else {
                 println!();
-                println!("  {} {}", "🍓".to_string(), "Pi 5 Fan Status".bold().magenta());
+                println!(
+                    "  {} {}",
+                    "🍓".to_string(),
+                    "Pi 5 Fan Status".bold().magenta()
+                );
                 println!("  {}", "─".repeat(30).dimmed());
                 println!();
-                println!("  {}  {}  {}", 
+                println!(
+                    "  {}  {}  {}",
                     "🌡️".to_string(),
                     "Temperature:".bold(),
                     temp_color(status.temperature_celsius)
                 );
                 println!();
-                println!("  {}  {}  {} {}",
+                println!(
+                    "  {}  {}  {} {}",
                     speed_emoji(status.speed_setting),
                     "Fan Speed:".bold(),
                     status.speed_setting.to_string().cyan(),
@@ -239,14 +252,23 @@ fn show_status(fan: &Fan, json: bool) {
                         println!("  {}  {}  {}", "⚡".to_string(), "RPM:".bold(), colored_rpm);
                     }
                     None => {
-                        println!("  {}  {}  {}", "⚡".to_string(), "RPM:".bold(), "unavailable".dimmed());
+                        println!(
+                            "  {}  {}  {}",
+                            "⚡".to_string(),
+                            "RPM:".bold(),
+                            "unavailable".dimmed()
+                        );
                     }
                 }
                 println!();
             }
         }
         Err(e) => {
-            eprintln!("{} Failed to read fan status: {}", "❌".to_string(), e.to_string().red());
+            eprintln!(
+                "{} Failed to read fan status: {}",
+                "❌".to_string(),
+                e.to_string().red()
+            );
             std::process::exit(1);
         }
     }
