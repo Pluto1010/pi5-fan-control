@@ -29,7 +29,7 @@ For scripting or monitoring integration, use the `--json` flag:
 
 ```
 $ rpi-fan-control --json
-{"temperature_celsius":45.2,"speed_setting":"off","speed_level":0,"rpm":0}
+{"temperature_celsius":45.2,"speed_setting":"low","speed_level":1,"rpm":1400}
 ```
 
 ### Daemon Mode
