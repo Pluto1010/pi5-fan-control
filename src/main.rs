@@ -146,7 +146,7 @@ impl Fan {
         } else if temp >= 55.0 {
             FanSpeed::Low
         } else {
-            FanSpeed::Off
+            FanSpeed::Low
         };
 
         self.set_speed(target_speed)?;
